@@ -8,6 +8,8 @@ on:
 jobs:
   compilar:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       CLAVE: ${{ secrets.CLAVE_FIRMA }}
       CONTRASENA: ${{ secrets.CONTRASENA_FIRMA }}
@@ -62,7 +64,18 @@ jobs:
           rm clave.jks
 
       - name: Preparar descargas
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk escondite3d-prueba.apk
+        run: |
+          # Firma la app de pruebas siempre con la misma clave para poder instalar versiones nuevas encima
+          base64 -d herramientas/clave-pruebas.txt > pruebas.jks
+          APKSIGNER=$(ls -d $ANDROID_HOME/build-tools/*/ | sort -V | tail -1)apksigner
+          $APKSIGNER sign --ks pruebas.jks --ks-pass pass:android --key-pass pass:android --ks-key-alias pruebas \
+            --out escondite3d-prueba.apk android/app/build/outputs/apk/debug/app-debug.apk
+          rm pruebas.jks
+
+      - name: Publicar la app para descargar
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "v1.${{ github.run_number }}" escondite3d-prueba.apk --title "Escondite 3D 1.${{ github.run_number }}" --notes "App para instalar en el móvil."
 
       - name: Subir APK para instalar en el móvil
         uses: actions/upload-artifact@v4

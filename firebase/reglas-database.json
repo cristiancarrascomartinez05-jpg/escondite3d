@@ -1,0 +1,17 @@
+{
+  "rules": {
+    "rooms": {
+      "$code": {
+        ".validate": "$code.matches(/^[A-Z0-9]{4,5}$/)",
+        "players": {
+          ".read": "auth != null",
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid",
+            ".validate": "newData.hasChildren(['n'])",
+            "n": { ".validate": "newData.isString() && newData.val().length <= 12" }
+          }
+        }
+      }
+    }
+  }
+}

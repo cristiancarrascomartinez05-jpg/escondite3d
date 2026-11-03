@@ -1,0 +1,8 @@
+{
+  "appId": "com.cristiancarrasco.escondite3d",
+  "appName": "Escondite 3D",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#0e1a2b"
+  }
+}

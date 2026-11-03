@@ -1,0 +1,22 @@
+{
+  "name": "escondite3d",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Juego de escondite multijugador en 3D",
+  "scripts": {
+    "iconos": "npx @capacitor/assets generate --android --iconBackgroundColor #0e1a2b --splashBackgroundColor #0e1a2b",
+    "sync": "npx cap sync android",
+    "abrir": "npx cap open android",
+    "preparar": "node herramientas/copiar-librerias.js"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "three": "0.128.0",
+    "firebase": "^12.1.1"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.5.2"
+  }
+}

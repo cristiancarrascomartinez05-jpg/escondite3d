@@ -30,6 +30,7 @@ jobs:
         run: |
           npm install
           npm run preparar
+          node herramientas/leer-config.js
           pip install pillow
           python3 herramientas/crear-iconos.py
 

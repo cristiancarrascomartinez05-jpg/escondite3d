@@ -1,11 +1,22 @@
-// PASO 3 de la guía: sustituye estos valores por los de tu proyecto de Firebase.
-// Los encuentras en Firebase > Configuración del proyecto > Tus apps > App web > Configuración del SDK.
-window.FIREBASE_CONFIG = {
-  apiKey: "PEGA_AQUI_TU_API_KEY",
-  authDomain: "PEGA_AQUI.firebaseapp.com",
-  databaseURL: "https://PEGA_AQUI-default-rtdb.firebaseio.com",
-  projectId: "PEGA_AQUI",
-  storageBucket: "PEGA_AQUI.appspot.com",
-  messagingSenderId: "PEGA_AQUI",
-  appId: "PEGA_AQUI"
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBSO4qNW44VJWZSHbNBObxZ-D1yPKK_adY",
+  authDomain: "escondite3d.firebaseapp.com",
+  databaseURL: "https://escondite3d-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "escondite3d",
+  storageBucket: "escondite3d.firebasestorage.app",
+  messagingSenderId: "327708987564",
+  appId: "1:327708987564:web:2e11c22b4695068efa0f09",
+  measurementId: "G-QM78BKY5QZ"
 };
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);

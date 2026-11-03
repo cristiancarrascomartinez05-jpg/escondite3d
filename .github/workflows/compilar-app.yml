@@ -1,0 +1,77 @@
+name: Compilar app Android
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  compilar:
+    runs-on: ubuntu-latest
+    env:
+      CLAVE: ${{ secrets.CLAVE_FIRMA }}
+      CONTRASENA: ${{ secrets.CONTRASENA_FIRMA }}
+    steps:
+      - name: Descargar el proyecto
+        uses: actions/checkout@v4
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Preparar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Instalar dependencias
+        run: |
+          npm install
+          npm run preparar
+          pip install pillow
+          python3 herramientas/crear-iconos.py
+
+      - name: Crear el proyecto Android
+        run: |
+          npx cap add android
+          npx @capacitor/assets generate --android --iconBackgroundColor "#0e1a2b" --splashBackgroundColor "#0e1a2b"
+          npx cap sync android
+
+      - name: Poner el número de versión
+        run: |
+          sed -i -E "s/versionCode [0-9]+/versionCode ${{ github.run_number }}/" android/app/build.gradle
+          sed -i -E "s/versionName \"[^\"]+\"/versionName \"1.${{ github.run_number }}\"/" android/app/build.gradle
+
+      - name: Compilar
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug bundleRelease --no-daemon
+
+      - name: Firmar el archivo para Google Play
+        if: ${{ env.CLAVE != '' }}
+        run: |
+          echo "$CLAVE" | base64 -d > clave.jks
+          jarsigner -keystore clave.jks -storepass "$CONTRASENA" -keypass "$CONTRASENA" \
+            -sigalg SHA256withRSA -digestalg SHA-256 \
+            -signedjar escondite3d-google-play.aab \
+            android/app/build/outputs/bundle/release/app-release.aab escondite
+          rm clave.jks
+
+      - name: Preparar descargas
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk escondite3d-prueba.apk
+
+      - name: Subir APK para instalar en el móvil
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-para-el-movil
+          path: escondite3d-prueba.apk
+
+      - name: Subir AAB para Google Play
+        if: ${{ hashFiles('escondite3d-google-play.aab') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-para-google-play
+          path: escondite3d-google-play.aab
